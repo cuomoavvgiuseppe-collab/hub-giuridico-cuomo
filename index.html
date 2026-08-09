@@ -8,29 +8,21 @@
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-          integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
           crossorigin="anonymous"
           onerror="window.__gsapFailed=true"></script>
   <style>
-    /* =====================================================
-       BASE
-    ===================================================== */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     :root {
-      --ink:        #040810;
-      --navy:       #070E1C;
-      --cyan:       rgba(100,200,235,1);
-      --cyan-glow:  rgba(80,180,220,1);
-      --plat:       rgba(210,230,240,1);
-      --text:       #EEF2F5;
-      --text2:      rgba(200,215,225,0.55);
-      --card-bg:    rgba(5,9,20,0.91);
-      --card-br:    rgba(140,210,235,0.22);
-      --card-br-t:  rgba(200,235,248,0.42);
-      --green:      #4DCCA0;
+      --ink:       #040810;
+      --text:      #DDE8EF;
+      --text2:     rgba(200,220,232,0.65);
+      --cyan:      rgba(110,205,238,1);
+      --card-bg:   rgba(6,11,22,0.92);
+      --card-br:   rgba(130,205,235,0.22);
+      --card-br-t: rgba(195,232,248,0.42);
     }
 
     html, body {
@@ -41,123 +33,61 @@
       -webkit-font-smoothing:antialiased;
     }
 
-    /* fallback if GSAP not loaded */
+    /* GSAP fallback: show everything if GSAP fails */
     .brand-header, .glass-card, .site-footer { opacity:1; }
     body.gsap-ready .brand-header,
     body.gsap-ready .glass-card,
     body.gsap-ready .site-footer { opacity:0; }
 
-    /* =====================================================
-       CANVAS (particle + bokeh)
-    ===================================================== */
-    #bg-canvas {
-      position:fixed; inset:0;
-      z-index:0;
-      pointer-events:none;
-    }
+    /* ---- Canvas ---- */
+    #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
 
-    /* =====================================================
-       FLOOR LINE
-    ===================================================== */
+    /* ---- Floor ---- */
     .floor {
-      position:fixed;
-      bottom:0; left:0; right:0;
-      height:200px;
-      background:linear-gradient(to bottom,
-        transparent 0%,
-        rgba(4,10,25,0.55) 50%,
-        rgba(4,10,25,0.90) 100%);
-      z-index:2;
-      pointer-events:none;
+      position:fixed; bottom:0; left:0; right:0; height:180px;
+      background:linear-gradient(to bottom, transparent, rgba(3,8,20,0.85));
+      z-index:2; pointer-events:none;
     }
     .floor::before {
-      content:'';
-      position:absolute;
-      top:0; left:8%; right:8%;
-      height:1px;
-      background:linear-gradient(90deg,
-        transparent,
-        rgba(100,190,225,0.14) 30%,
-        rgba(100,190,225,0.14) 70%,
-        transparent);
+      content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(100,190,225,0.12), transparent);
     }
 
-    /* =====================================================
-       SCENE
-    ===================================================== */
+    /* ---- Scene ---- */
     #scene {
-      position:fixed; inset:0;
-      z-index:10;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
+      position:fixed; inset:0; z-index:10;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
       perspective:1600px;
     }
 
-    /* =====================================================
-       BRAND HEADER
-    ===================================================== */
+    /* ---- Brand Header ---- */
     .brand-header {
-      position:absolute;
-      top:40px;
-      left:50%;
-      transform:translateX(-50%);
-      text-align:center;
-      pointer-events:none;
-      white-space:nowrap;
-      z-index:20;
+      position:absolute; top:38px; left:50%; transform:translateX(-50%);
+      text-align:center; pointer-events:none; white-space:nowrap; z-index:20;
     }
-
-    .brand-icon {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin-bottom:14px;
-    }
-    .brand-icon svg {
-      filter:drop-shadow(0 0 8px rgba(100,200,235,0.35));
-    }
-
+    .brand-icon { display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+    .brand-icon svg { filter:drop-shadow(0 0 8px rgba(110,205,238,0.3)); }
     .brand-name {
-      font-family:'Cinzel', serif;
-      font-size:28px;
-      font-weight:500;
-      letter-spacing:0.28em;
-      text-transform:uppercase;
-      color:var(--text);
-      text-shadow:0 0 40px rgba(100,200,235,0.12);
+      font-family:'Cinzel', serif; font-size:27px; font-weight:500;
+      letter-spacing:0.3em; text-transform:uppercase; color:var(--text);
     }
-
     .brand-rule {
-      width:90px; height:1px;
-      background:linear-gradient(90deg, transparent, rgba(100,200,235,0.4), transparent);
-      margin:14px auto;
+      width:80px; height:1px; margin:13px auto;
+      background:linear-gradient(90deg, transparent, rgba(110,205,238,0.38), transparent);
     }
-
     .brand-claim {
-      font-family:'Inter', sans-serif;
-      font-size:9.5px;
-      font-weight:300;
-      letter-spacing:0.45em;
-      text-transform:uppercase;
-      color:var(--text2);
+      font-family:'Inter', sans-serif; font-size:9.5px; font-weight:300;
+      letter-spacing:0.45em; text-transform:uppercase; color:var(--text2);
     }
 
-    /* =====================================================
-       CARDS STAGE — 4-column arrangement, zero 2D overlap
-    ===================================================== */
+    /* ---- Cards Stage ---- */
     #cards-stage {
-      position:relative;
-      width:880px;
-      height:490px;
-      transform-style:preserve-3d;
-      margin-top:50px;
+      position:relative; width:880px; height:490px;
+      transform-style:preserve-3d; margin-top:52px;
     }
 
-    /* =====================================================
-       GLASS CARD — dark opaque glass + platinum cyan glow
-    ===================================================== */
+    /* ---- Glass Card (DIV — no nested anchors) ---- */
     .glass-card {
       position:absolute;
       border-radius:14px;
@@ -165,228 +95,134 @@
       border:1px solid var(--card-br);
       border-top-color:var(--card-br-t);
       box-shadow:
-        0 0 22px rgba(80,175,215,0.14),
-        0 0 55px rgba(60,155,200,0.08),
-        0 12px 40px rgba(0,0,10,0.65),
-        inset 0 1px 0 rgba(200,235,248,0.1),
-        inset 0 -1px 0 rgba(0,0,0,0.3);
-      backdrop-filter:blur(18px) saturate(130%);
-      -webkit-backdrop-filter:blur(18px) saturate(130%);
+        0 0 20px rgba(80,175,215,0.13),
+        0 0 50px rgba(60,155,200,0.07),
+        0 14px 42px rgba(0,0,10,0.7),
+        inset 0 1px 0 rgba(200,235,248,0.09);
+      backdrop-filter:blur(16px) saturate(125%);
+      -webkit-backdrop-filter:blur(16px) saturate(125%);
       cursor:pointer;
       transform-style:preserve-3d;
-      will-change:transform,opacity;
+      will-change:transform, opacity;
       overflow:hidden;
-      text-decoration:none;
-      color:inherit;
-      display:block;
-      transition:border-color 0.45s ease, box-shadow 0.45s ease;
+      transition:border-color 0.4s ease, box-shadow 0.4s ease;
     }
-
-    /* Top-left subtle shimmer */
+    /* Top-left subtle wash */
     .glass-card::before {
-      content:'';
-      position:absolute;
-      top:0; left:0;
-      width:50%; height:35%;
-      background:linear-gradient(135deg,rgba(100,200,235,0.07) 0%,transparent 65%);
-      border-radius:14px 0 0 0;
-      pointer-events:none;
+      content:''; position:absolute; top:0; left:0;
+      width:50%; height:38%;
+      background:linear-gradient(135deg, rgba(110,205,238,0.06) 0%, transparent 65%);
+      border-radius:14px 0 0 0; pointer-events:none;
     }
-
-    /* Keyboard focus */
     .glass-card:focus-visible {
-      outline:2px solid rgba(100,200,235,0.65);
-      outline-offset:4px;
+      outline:2px solid rgba(110,205,238,0.6); outline-offset:4px;
     }
-
-    /* Hovered / focused */
     .glass-card.is-hovered {
-      border-color:rgba(120,215,248,0.5) !important;
+      border-color:rgba(130,215,248,0.48) !important;
       box-shadow:
-        0 0 30px rgba(80,185,225,0.28),
-        0 0 70px rgba(60,160,210,0.14),
-        0 20px 55px rgba(0,0,10,0.7),
-        inset 0 1px 0 rgba(210,240,252,0.16),
-        inset 0 -1px 0 rgba(0,0,0,0.3) !important;
+        0 0 28px rgba(80,185,225,0.26),
+        0 0 65px rgba(60,160,210,0.12),
+        0 22px 56px rgba(0,0,10,0.72),
+        inset 0 1px 0 rgba(210,240,252,0.14) !important;
     }
 
-    /* ---- Card layout ---- */
+    /* ---- Card inner ---- */
     .card-inner {
-      padding:22px 22px 18px;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      z-index:1;
+      padding:22px 22px 18px; height:100%;
+      display:flex; flex-direction:column;
+      position:relative; z-index:1;
     }
-
-    /* Icon badge */
     .card-badge {
-      width:44px; height:44px;
-      border-radius:10px;
-      border:1px solid rgba(140,210,235,0.25);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin-bottom:14px;
-      background:rgba(30,70,100,0.25);
-      flex-shrink:0;
+      width:42px; height:42px; border-radius:10px;
+      border:1px solid rgba(130,205,235,0.22);
+      display:flex; align-items:center; justify-content:center;
+      margin-bottom:13px; background:rgba(25,60,90,0.22); flex-shrink:0;
     }
-    .card-badge svg { width:22px; height:22px; }
-
+    .card-badge svg { width:20px; height:20px; }
     .card-brand {
-      font-family:'Cinzel', serif;
-      font-size:17px;
-      font-weight:500;
-      letter-spacing:0.06em;
-      line-height:1.2;
-      color:var(--text);
-      margin-bottom:3px;
-      flex-shrink:0;
+      font-family:'Cinzel', serif; font-size:16.5px; font-weight:500;
+      letter-spacing:0.05em; line-height:1.2; color:var(--text);
+      margin-bottom:3px; flex-shrink:0;
     }
-
     .card-sub {
-      font-family:'Inter', sans-serif;
-      font-size:8px;
-      font-weight:400;
-      letter-spacing:0.22em;
-      text-transform:uppercase;
-      color:rgba(100,200,235,0.75);
-      margin-bottom:12px;
-      flex-shrink:0;
+      font-family:'Inter', sans-serif; font-size:7.5px; font-weight:400;
+      letter-spacing:0.22em; text-transform:uppercase;
+      color:rgba(110,205,238,0.8); margin-bottom:12px; flex-shrink:0;
     }
-
     .card-rule {
-      width:100%; height:1px;
-      background:linear-gradient(90deg,rgba(100,200,235,0.3),transparent);
-      margin-bottom:10px;
-      flex-shrink:0;
+      width:100%; height:1px; margin-bottom:10px; flex-shrink:0;
+      background:linear-gradient(90deg, rgba(110,205,238,0.28), transparent);
     }
-
     .card-desc {
-      font-family:'Cormorant Garamond', serif;
-      font-size:13.5px;
-      font-weight:300;
-      line-height:1.75;
-      color:var(--text2);
-      flex:1;
+      font-family:'Inter', sans-serif; font-size:11.5px; font-weight:300;
+      line-height:1.75; color:var(--text2); flex:1;
     }
-
-    /* CTA button — always visible */
+    /* CTA — always visible, real <a> tag inside div */
     .card-cta {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-top:14px;
-      padding:7px 16px;
-      border-radius:4px;
-      border:1px solid rgba(100,200,235,0.28);
-      font-family:'Inter', sans-serif;
-      font-size:9.5px;
-      font-weight:500;
-      letter-spacing:0.22em;
-      text-transform:uppercase;
-      color:rgba(180,225,240,0.85);
-      background:rgba(40,100,140,0.1);
-      text-decoration:none;
-      transition:background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-      flex-shrink:0;
-      align-self:flex-start;
+      display:inline-flex; align-items:center; gap:7px;
+      margin-top:14px; padding:7px 15px; border-radius:4px;
+      border:1px solid rgba(110,205,238,0.25);
+      font-family:'Inter', sans-serif; font-size:9px; font-weight:500;
+      letter-spacing:0.22em; text-transform:uppercase;
+      color:rgba(175,225,242,0.88); background:rgba(30,85,125,0.1);
+      text-decoration:none; flex-shrink:0; align-self:flex-start;
+      transition:background 0.3s, border-color 0.3s, color 0.3s;
     }
     .card-cta:hover {
-      background:rgba(60,150,200,0.18);
-      border-color:rgba(120,215,248,0.45);
+      background:rgba(55,145,195,0.18); border-color:rgba(130,215,248,0.42);
       color:var(--text);
     }
 
-    /* ---- Card positions — no 2D overlap ---- */
-    /* CLP Studio: far left, tall */
+    /* ---- Final card positions (no 2D overlap) ---- */
+    /* CLP Studio: left column, tall */
     #card-studio     { left:5px;   top:68px;  width:270px; height:355px; }
-    /* CLP Publishing: center-left, top */
-    #card-publishing { left:292px; top:8px;   width:265px; height:200px; }
+    /* Publishing: center-left, top */
+    #card-publishing { left:292px; top:8px;   width:265px; height:198px; }
     /* CAP: center-left, bottom */
     #card-cap        { left:292px; top:258px; width:275px; height:210px; }
-    /* CLP Prompt: far right */
-    #card-prompt     { left:615px; top:112px; width:258px; height:262px; }
+    /* Prompt: right column */
+    #card-prompt     { left:616px; top:110px; width:258px; height:262px; }
 
-    /* =====================================================
-       FOOTER
-    ===================================================== */
+    /* ---- Footer ---- */
     .site-footer {
-      position:fixed;
-      bottom:22px;
-      left:50%;
-      transform:translateX(-50%);
-      font-family:'Inter', sans-serif;
-      font-size:9px;
-      font-weight:300;
-      letter-spacing:0.28em;
-      text-transform:uppercase;
-      color:rgba(180,210,225,0.18);
-      z-index:20;
-      pointer-events:none;
-      white-space:nowrap;
+      position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+      font-family:'Inter', sans-serif; font-size:9px; font-weight:300;
+      letter-spacing:0.28em; text-transform:uppercase;
+      color:rgba(170,205,220,0.17); z-index:20;
+      pointer-events:none; white-space:nowrap;
     }
 
-    /* =====================================================
-       MOBILE
-    ===================================================== */
+    /* ---- Mobile ---- */
     @media (max-width:860px) {
       html,body { overflow:auto; }
-      #scene {
-        position:relative;
-        min-height:100dvh;
-        padding:105px 16px 60px;
-        perspective:none;
-        justify-content:flex-start;
-      }
-      .brand-header { top:24px; white-space:normal; width:90%; }
+      #scene { position:relative; min-height:100dvh; padding:105px 16px 60px; perspective:none; justify-content:flex-start; }
+      .brand-header { top:22px; white-space:normal; width:90%; }
       .brand-name { font-size:20px; letter-spacing:0.2em; }
-      #cards-stage {
-        width:100%; height:auto;
-        transform-style:flat !important;
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:12px;
-        margin-top:12px;
-      }
-      .glass-card {
-        position:relative !important;
-        left:auto !important; top:auto !important;
-        width:100% !important; height:auto !important;
-        transform:none !important;
-      }
+      #cards-stage { width:100%; height:auto; transform-style:flat !important; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+      .glass-card { position:relative !important; left:auto !important; top:auto !important; width:100% !important; height:auto !important; transform:none !important; }
       .card-inner { padding:18px 16px 14px; }
       .site-footer { display:none; }
     }
-    @media (max-width:480px) {
-      #cards-stage { grid-template-columns:1fr; }
-    }
-
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(12px); }
-      to   { opacity:1; transform:none; }
-    }
+    @media (max-width:480px) { #cards-stage { grid-template-columns:1fr; } }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
   </style>
 </head>
 <body>
 
-<!-- CANVAS: particle stars + bokeh -->
 <canvas id="bg-canvas"></canvas>
 <div class="floor"></div>
 
 <div id="scene">
 
-  <!-- BRAND HEADER -->
   <header class="brand-header">
     <div class="brand-icon">
       <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-        <line x1="16" y1="4" x2="16" y2="28" stroke="rgba(180,225,240,0.9)" stroke-width="1.1" stroke-linecap="round"/>
-        <line x1="5"  y1="8" x2="27" y2="8"  stroke="rgba(180,225,240,0.9)" stroke-width="1.1" stroke-linecap="round"/>
-        <path d="M5 8L2 17Q5 21 8 17L5 8Z"   stroke="rgba(180,225,240,0.8)" stroke-width="1" fill="rgba(100,200,235,0.1)"/>
-        <path d="M27 8L24 17Q27 21 30 17L27 8Z" stroke="rgba(180,225,240,0.8)" stroke-width="1" fill="rgba(100,200,235,0.1)"/>
-        <line x1="11" y1="28" x2="21" y2="28" stroke="rgba(180,225,240,0.9)" stroke-width="1.1" stroke-linecap="round"/>
-        <circle cx="16" cy="8" r="1.4" fill="rgba(180,225,240,0.7)"/>
+        <line x1="16" y1="4" x2="16" y2="28" stroke="rgba(180,225,242,0.88)" stroke-width="1.1" stroke-linecap="round"/>
+        <line x1="5" y1="8" x2="27" y2="8" stroke="rgba(180,225,242,0.88)" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M5 8L2 17Q5 21 8 17L5 8Z" stroke="rgba(180,225,242,0.75)" stroke-width="0.95" fill="rgba(110,205,238,0.1)"/>
+        <path d="M27 8L24 17Q27 21 30 17L27 8Z" stroke="rgba(180,225,242,0.75)" stroke-width="0.95" fill="rgba(110,205,238,0.1)"/>
+        <line x1="11" y1="28" x2="21" y2="28" stroke="rgba(180,225,242,0.88)" stroke-width="1.1" stroke-linecap="round"/>
+        <circle cx="16" cy="8" r="1.4" fill="rgba(180,225,242,0.7)"/>
       </svg>
     </div>
     <div class="brand-name">Hub Giuridico Cuomo</div>
@@ -394,39 +230,36 @@
     <p class="brand-claim">Tecnologia Legale &nbsp;·&nbsp; Eccellenza &nbsp;·&nbsp; Innovazione</p>
   </header>
 
-  <!-- CARDS STAGE -->
   <nav id="cards-stage" aria-label="Ecosistema Hub Giuridico Cuomo">
 
-    <!-- Studio Legale Cuomo -->
-    <a class="glass-card" id="card-studio"
-       href="https://studiolegalecuomogiuseppe.it"
-       data-href="https://studiolegalecuomogiuseppe.it"
-       tabindex="0"
-       aria-label="Studio Legale Cuomo — Disponibile">
+    <!-- CLP Studio Legale — DIV, not <a>, to avoid nested anchor bug -->
+    <div class="glass-card" id="card-studio"
+         role="link" tabindex="0"
+         data-href="https://studiolegalecuomogiuseppe.it"
+         aria-label="Studio Legale Cuomo — Accedi">
       <div class="card-inner">
         <div class="card-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,235,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,238,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <line x1="9" y1="12" x2="11" y2="14"/><line x1="11" y1="14" x2="15" y2="10"/>
+            <polyline points="9 12 11 14 15 10"/>
           </svg>
         </div>
         <div class="card-brand">CLP</div>
         <div class="card-sub">Cuomo Legal Platform</div>
         <div class="card-rule"></div>
-        <p class="card-desc">Piattaforma integrata per la gestione avanzata dello studio e della consulenza legale. Avv. Giuseppe Cuomo — Cassazionista.</p>
-        <a class="card-cta" href="https://studiolegalecuomogiuseppe.it" tabindex="-1">→ Accedi</a>
+        <p class="card-desc">Piattaforma integrata per la gestione avanzata dello studio e della consulenza legale. Avv. Giuseppe Cuomo — Cassazionista, Nocera Inferiore.</p>
+        <a class="card-cta" href="https://studiolegalecuomogiuseppe.it">→ Accedi</a>
       </div>
-    </a>
+    </div>
 
     <!-- CLP Publishing -->
-    <a class="glass-card" id="card-publishing"
-       href="https://clp-publishing.vercel.app"
-       data-href="https://clp-publishing.vercel.app"
-       tabindex="0"
-       aria-label="CLP Publishing — Disponibile">
+    <div class="glass-card" id="card-publishing"
+         role="link" tabindex="0"
+         data-href="https://clp-publishing.vercel.app"
+         aria-label="CLP Publishing — Esplora">
       <div class="card-inner">
         <div class="card-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,235,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,238,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
           </svg>
@@ -434,52 +267,49 @@
         <div class="card-brand">CLP Publishing</div>
         <div class="card-sub">Editoria Giuridica</div>
         <div class="card-rule"></div>
-        <p class="card-desc">La casa editrice digitale per la formazione e l'aggiornamento continuo del professionista del diritto.</p>
-        <a class="card-cta" href="https://clp-publishing.vercel.app" tabindex="-1">Esplora</a>
+        <p class="card-desc">La casa editrice per la formazione e l'aggiornamento continuo del professionista del diritto.</p>
+        <a class="card-cta" href="https://clp-publishing.vercel.app">Esplora</a>
       </div>
-    </a>
+    </div>
 
     <!-- CAP -->
-    <a class="glass-card" id="card-cap"
-       href="https://cap-amber.vercel.app"
-       data-href="https://cap-amber.vercel.app"
-       tabindex="0"
-       aria-label="CAP — Cuomo Application Platform — Disponibile">
+    <div class="glass-card" id="card-cap"
+         role="link" tabindex="0"
+         data-href="https://cap-amber.vercel.app"
+         aria-label="CAP — Cuomo Application Platform — Avvia">
       <div class="card-inner">
         <div class="card-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,235,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,238,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
         </div>
         <div class="card-brand">CAP</div>
         <div class="card-sub">Cuomo Application Platform</div>
         <div class="card-rule"></div>
         <p class="card-desc">La piattaforma operativa per automatizzare, collaborare e innovare in sicurezza.</p>
-        <a class="card-cta" href="https://cap-amber.vercel.app" tabindex="-1">Avvia Piattaforma →</a>
+        <a class="card-cta" href="https://cap-amber.vercel.app">Avvia Piattaforma →</a>
       </div>
-    </a>
+    </div>
 
     <!-- CLP Prompt Pack -->
-    <a class="glass-card" id="card-prompt"
-       href="https://prompt-pack-store.vercel.app"
-       data-href="https://prompt-pack-store.vercel.app"
-       tabindex="0"
-       aria-label="CLP Prompt Pack — Store AI per il Diritto — Disponibile">
+    <div class="glass-card" id="card-prompt"
+         role="link" tabindex="0"
+         data-href="https://prompt-pack-store.vercel.app"
+         aria-label="CLP Prompt Pack — Scopri">
       <div class="card-inner">
         <div class="card-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,235,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-            <path d="M9 8l2 2 4-4"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(140,210,238,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
           </svg>
         </div>
         <div class="card-brand">CLP Prompt Pack</div>
         <div class="card-sub">Store AI per il Diritto</div>
         <div class="card-rule"></div>
-        <p class="card-desc">Il toolkit di prompt intelligenti per massimizzare l'efficacia dell'AI nel diritto. Oltre 20 aree specializzate.</p>
-        <a class="card-cta" href="https://prompt-pack-store.vercel.app" tabindex="-1">Scopri</a>
+        <p class="card-desc">Il toolkit di prompt intelligenti per massimizzare l'efficacia dell'AI nella pratica legale. Oltre 20 aree del diritto.</p>
+        <a class="card-cta" href="https://prompt-pack-store.vercel.app">Scopri</a>
       </div>
-    </a>
+    </div>
 
   </nav>
 
@@ -489,96 +319,65 @@
 </div>
 
 <script>
-/* ====================================================
-   CANVAS — particle stars + large bokeh
-==================================================== */
+/* ---- Canvas: stars + bokeh ---- */
 (function () {
-  const cv  = document.getElementById('bg-canvas');
+  const cv = document.getElementById('bg-canvas');
   const ctx = cv.getContext('2d');
   let W, H, stars = [], bokeh = [];
 
-  function resize() {
-    W = cv.width  = window.innerWidth;
-    H = cv.height = window.innerHeight;
-  }
+  function resize() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
 
   function initStars() {
     stars = [];
-    const n = Math.round((W * H) / 12000);
-    for (let i = 0; i < n; i++) {
-      stars.push({
-        x:  Math.random() * W,
-        y:  Math.random() * H * 0.85,
-        r:  Math.random() * 1.0 + 0.15,
-        a:  Math.random() * 0.4 + 0.05,
-        tw: Math.random() * Math.PI * 2,
-        ts: Math.random() * 0.009 + 0.003,
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: (Math.random() - 0.5) * 0.08,
-      });
-    }
+    const n = Math.round((W * H) / 11000);
+    for (let i = 0; i < n; i++) stars.push({
+      x: Math.random() * W, y: Math.random() * H * 0.82,
+      r: Math.random() * 0.95 + 0.15,
+      vx: (Math.random() - 0.5) * 0.07, vy: (Math.random() - 0.5) * 0.07,
+      a: Math.random() * 0.38 + 0.05,
+      tw: Math.random() * Math.PI * 2, ts: Math.random() * 0.009 + 0.003,
+    });
   }
 
   function initBokeh() {
     bokeh = [];
-    const nb = Math.round(W / 60);
-    for (let i = 0; i < nb; i++) {
-      const r = Math.random() * 38 + 12;
-      bokeh.push({
-        x:  Math.random() * W,
-        y:  Math.random() * H * 0.8,
-        r,
-        a:  Math.random() * 0.12 + 0.04,
-        tw: Math.random() * Math.PI * 2,
-        ts: Math.random() * 0.006 + 0.002,
-        // hue shift: mostly silver-cyan
-        h: Math.random() > 0.7 ? 200 : 210,
-        s: Math.random() * 30 + 60,
-      });
-    }
+    const nb = Math.round(W / 80);
+    for (let i = 0; i < nb; i++) bokeh.push({
+      x: Math.random() * W, y: Math.random() * H * 0.75,
+      r: Math.random() * 18 + 7,          /* smaller: 7–25px */
+      a: Math.random() * 0.09 + 0.03,     /* more subtle */
+      tw: Math.random() * Math.PI * 2, ts: Math.random() * 0.005 + 0.002,
+      h: Math.random() > 0.6 ? 202 : 215, s: Math.random() * 25 + 55,
+    });
   }
 
   function drawBokeh(b) {
     b.tw += b.ts;
-    const alpha = b.a * (0.6 + 0.4 * Math.sin(b.tw));
+    const a = b.a * (0.55 + 0.45 * Math.sin(b.tw));
     const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-    g.addColorStop(0,   `hsla(${b.h},${b.s}%,78%,${alpha * 0.25})`);
-    g.addColorStop(0.65, `hsla(${b.h},${b.s}%,80%,${alpha * 0.55})`);
-    g.addColorStop(0.88, `hsla(${b.h},${b.s}%,85%,${alpha})`);
-    g.addColorStop(1,    `hsla(${b.h},${b.s}%,85%,0)`);
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-    ctx.fillStyle = g;
-    ctx.fill();
+    g.addColorStop(0,    `hsla(${b.h},${b.s}%,80%,${a * 0.2})`);
+    g.addColorStop(0.7,  `hsla(${b.h},${b.s}%,82%,${a * 0.55})`);
+    g.addColorStop(0.9,  `hsla(${b.h},${b.s}%,88%,${a})`);
+    g.addColorStop(1,    `hsla(${b.h},${b.s}%,88%,0)`);
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fillStyle = g; ctx.fill();
   }
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
-
-    /* Deep background gradient */
-    const bg = ctx.createRadialGradient(W * 0.5, H * 0.42, 0, W * 0.5, H * 0.42, Math.max(W, H) * 0.72);
-    bg.addColorStop(0,   '#0B1628');
-    bg.addColorStop(0.5, '#060D1A');
-    bg.addColorStop(1,   '#040810');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-
-    /* Bokeh */
+    const bg = ctx.createRadialGradient(W * .5, H * .42, 0, W * .5, H * .42, Math.max(W, H) * .72);
+    bg.addColorStop(0, '#0C1828'); bg.addColorStop(.5, '#070E1C'); bg.addColorStop(1, '#040810');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
     bokeh.forEach(drawBokeh);
-
-    /* Stars */
     stars.forEach(p => {
       p.tw += p.ts;
       const a = p.a * (0.4 + 0.6 * Math.sin(p.tw));
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200,220,235,${a})`;
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,220,235,${a})`; ctx.fill();
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H * 0.85; if (p.y > H * 0.85) p.y = 0;
+      if (p.y < 0) p.y = H * .82; if (p.y > H * .82) p.y = 0;
     });
-
     requestAnimationFrame(draw);
   }
 
@@ -586,9 +385,7 @@
   resize(); initStars(); initBokeh(); draw();
 })();
 
-/* ====================================================
-   ANIMATIONS
-==================================================== */
+/* ---- Animations ---- */
 const isMobile = window.innerWidth <= 860;
 const gsapOK   = typeof gsap !== 'undefined' && !window.__gsapFailed;
 
@@ -605,7 +402,6 @@ if (!isMobile && gsapOK) {
   };
   const all = Object.values(C);
 
-  /* Final 3D angles per card (matching reference depth) */
   const FINAL = {
     studio:     { rotateY:  9, rotateX: -2, z: 50 },
     publishing: { rotateY: -5, rotateX:  5, z: 25 },
@@ -613,124 +409,87 @@ if (!isMobile && gsapOK) {
     prompt:     { rotateY: -9, rotateX: -2, z: 50 },
   };
 
-  /* Initial off-screen state */
   gsap.set('.brand-header', { opacity:0, y:-22 });
   gsap.set('.site-footer',  { opacity:0 });
   gsap.set(C.studio,     { x:-720, y: 260, rotateY:-72, rotateX: 22, rotateZ:-18, opacity:0, scale:0.52 });
-  gsap.set(C.publishing, { x: 360, y:-490, rotateY: 56, rotateX:-33, rotateZ: 24, opacity:0, scale:0.52 });
+  gsap.set(C.publishing, { x: 360, y:-490, rotateY: 55, rotateX:-33, rotateZ: 24, opacity:0, scale:0.52 });
   gsap.set(C.cap,        { x:-310, y: 560, rotateY:-44, rotateX: 50, rotateZ: 14, opacity:0, scale:0.52 });
   gsap.set(C.prompt,     { x: 680, y: 190, rotateY: 68, rotateX:-24, rotateZ:-28, opacity:0, scale:0.52 });
 
   const tl = gsap.timeline({ delay: 0.3 });
 
-  /* — Phase 1: Entry + intertwining — */
-  tl.to(C.studio, {
-    x: 140, y:-80, rotateY:-18, rotateX:6, rotateZ:-4,
-    opacity:1, scale:1, duration:2.9, ease:'power2.inOut'
-  }, 0)
-  .to(C.publishing, {
-    x:-120, y:100, rotateY:22, rotateX:-10, rotateZ:7,
-    opacity:1, scale:1, duration:2.9, ease:'power2.inOut'
-  }, 0.2)
-  .to(C.cap, {
-    x:-70, y:-155, rotateY:30, rotateX:15, rotateZ:-8,
-    opacity:1, scale:1, duration:2.9, ease:'power2.inOut'
-  }, 0.45)
-  .to(C.prompt, {
-    x: 85, y:115, rotateY:-38, rotateX:-13, rotateZ:15,
-    opacity:1, scale:1, duration:2.9, ease:'power2.inOut'
-  }, 0.1)
+  tl.to(C.studio,     { x:140, y:-80,  rotateY:-18, rotateX: 6, rotateZ:-4, opacity:1, scale:1, duration:2.9, ease:'power2.inOut' }, 0)
+    .to(C.publishing, { x:-120,y: 100, rotateY: 22, rotateX:-10, rotateZ: 7, opacity:1, scale:1, duration:2.9, ease:'power2.inOut' }, 0.2)
+    .to(C.cap,        { x:-70, y:-155, rotateY: 30, rotateX: 15, rotateZ:-8, opacity:1, scale:1, duration:2.9, ease:'power2.inOut' }, 0.45)
+    .to(C.prompt,     { x: 85, y: 115, rotateY:-38, rotateX:-13, rotateZ:15, opacity:1, scale:1, duration:2.9, ease:'power2.inOut' }, 0.1)
+    .to(C.studio,     { x:0, y:0, ...FINAL.studio,     duration:2.0, ease:'power3.out' })
+    .to(C.publishing, { x:0, y:0, ...FINAL.publishing, duration:2.0, ease:'power3.out' }, '<')
+    .to(C.cap,        { x:0, y:0, ...FINAL.cap,        duration:2.0, ease:'power3.out' }, '<')
+    .to(C.prompt,     { x:0, y:0, ...FINAL.prompt,     duration:2.0, ease:'power3.out' }, '<')
+    .to('.brand-header', { opacity:1, y:0, duration:1.1, ease:'power2.out' }, '-=1.4')
+    .to('.site-footer',  { opacity:1,     duration:0.9, ease:'power2.out' }, '-=0.8');
 
-  /* — Phase 2: Settle to final — */
-  .to(C.studio,     { x:0, y:0, ...FINAL.studio,     duration:2.0, ease:'power3.out' })
-  .to(C.publishing, { x:0, y:0, ...FINAL.publishing, duration:2.0, ease:'power3.out' }, '<')
-  .to(C.cap,        { x:0, y:0, ...FINAL.cap,        duration:2.0, ease:'power3.out' }, '<')
-  .to(C.prompt,     { x:0, y:0, ...FINAL.prompt,     duration:2.0, ease:'power3.out' }, '<')
-  .to('.brand-header', { opacity:1, y:0, duration:1.1, ease:'power2.out' }, '-=1.4')
-  .to('.site-footer',  { opacity:1,     duration:0.9, ease:'power2.out' }, '-=0.8');
-
-  /* — Phase 3: Idle float — */
   tl.call(() => {
-    [
-      { el:C.studio,     dur:4.4, dy: 8, dry: 3.5, drx:-1.5 },
-      { el:C.publishing, dur:5.2, dy:-7, dry:-3.0, drx: 2.0 },
-      { el:C.cap,        dur:4.7, dy: 9, dry: 2.5, drx:-2.0 },
-      { el:C.prompt,     dur:4.0, dy:-8, dry:-3.5, drx: 1.5 },
+    [ { el:C.studio, dur:4.4, dy:8,  dry:3.5,  drx:-1.5 },
+      { el:C.publishing, dur:5.2, dy:-7, dry:-3.0, drx:2.0 },
+      { el:C.cap,    dur:4.7, dy:9,  dry:2.5,  drx:-2.0 },
+      { el:C.prompt, dur:4.0, dy:-8, dry:-3.5, drx:1.5  },
     ].forEach(({ el, dur, dy, dry, drx }) => {
-      gsap.to(el, {
-        y:`+=${dy}`, rotateY:`+=${dry * 0.4}`, rotateX:`+=${drx * 0.35}`,
-        duration:dur, repeat:-1, yoyo:true, ease:'sine.inOut',
-      });
+      gsap.to(el, { y:`+=${dy}`, rotateY:`+=${dry*.4}`, rotateX:`+=${drx*.35}`,
+        duration:dur, repeat:-1, yoyo:true, ease:'sine.inOut' });
     });
   });
 
-  /* — Cursor parallax on stage — */
+  /* Cursor parallax */
   document.addEventListener('mousemove', e => {
     const mx = (e.clientX / window.innerWidth  - 0.5) * 2;
     const my = (e.clientY / window.innerHeight - 0.5) * 2;
-    gsap.to(stage, {
-      rotateY: mx * 3.5, rotateX: my * -2.5,
-      duration:1.6, ease:'power1.out', overwrite:'auto',
-    });
+    gsap.to(stage, { rotateY:mx*3.5, rotateX:my*-2.5, duration:1.6, ease:'power1.out', overwrite:'auto' });
   });
 
-  /* — Hover — */
+  /* Hover */
   all.forEach(card => {
-    card.addEventListener('mouseenter', () => {
+    const enter = () => {
       card.classList.add('is-hovered');
       gsap.to(card, { scale:1.045, z:70, rotateY:0, rotateX:0, duration:0.42, ease:'power2.out', overwrite:'auto' });
       all.filter(c => c !== card).forEach(o =>
-        gsap.to(o, { opacity:0.35, scale:0.97, duration:0.42, ease:'power2.out', overwrite:'auto' })
-      );
-    });
-    card.addEventListener('mouseleave', () => {
+        gsap.to(o, { opacity:0.35, scale:0.97, duration:0.42, ease:'power2.out', overwrite:'auto' }));
+    };
+    const leave = () => {
       card.classList.remove('is-hovered');
       gsap.to(card, { scale:1, z:0, duration:0.5, ease:'power2.out', overwrite:'auto' });
       all.filter(c => c !== card).forEach(o =>
-        gsap.to(o, { opacity:1, scale:1, duration:0.5, ease:'power2.out', overwrite:'auto' })
-      );
-    });
+        gsap.to(o, { opacity:1, scale:1, duration:0.5, ease:'power2.out', overwrite:'auto' }));
+    };
+    card.addEventListener('mouseenter', enter);
+    card.addEventListener('mouseleave', leave);
+    card.addEventListener('focus',      enter);
+    card.addEventListener('blur',       leave);
 
-    /* Focus (keyboard) */
-    card.addEventListener('focus', () => card.classList.add('is-hovered'));
-    card.addEventListener('blur',  () => card.classList.remove('is-hovered'));
-
-    /* Click zoom → navigate */
-    card.addEventListener('click', e => {
+    /* Click + keyboard */
+    const navigate = e => {
+      if (e.target.closest('a')) return; /* let inner <a> handle its own click */
       e.preventDefault();
       const href = card.dataset.href;
       gsap.killTweensOf(all);
-      gsap.to(card, {
-        scale:1.1, z:130, duration:0.3, ease:'power3.in',
+      gsap.to(card, { scale:1.1, z:130, duration:0.3, ease:'power3.in',
         onComplete() {
-          gsap.to(card, {
-            scale:22, opacity:0, duration:0.7, ease:'power3.in',
-            onComplete() { window.location.href = href; }
-          });
-        }
-      });
+          gsap.to(card, { scale:22, opacity:0, duration:0.7, ease:'power3.in',
+            onComplete() { window.location.href = href; }});
+        }});
       all.filter(c => c !== card).forEach(o =>
-        gsap.to(o, { opacity:0, scale:0.88, duration:0.45, ease:'power2.in' })
-      );
-    });
-
-    /* Keyboard Enter/Space */
+        gsap.to(o, { opacity:0, scale:0.88, duration:0.45, ease:'power2.in' }));
+    };
+    card.addEventListener('click', navigate);
     card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        window.location.href = card.dataset.href;
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = card.dataset.href; }
     });
   });
 
 } else {
-  /* Fallback: show everything statically */
   document.querySelectorAll('.brand-header,.glass-card,.site-footer').forEach((el, i) => {
-    if (!isMobile) {
-      el.style.opacity = '1';
-    } else {
-      el.style.animation = `fadeUp 0.6s ease ${0.15 + i * 0.1}s both`;
-    }
+    if (!isMobile) { el.style.opacity = '1'; }
+    else { el.style.animation = `fadeUp 0.6s ease ${0.15 + i * 0.1}s both`; }
   });
 }
 </script>
