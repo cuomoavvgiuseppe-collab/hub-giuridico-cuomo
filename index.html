@@ -17,6 +17,11 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* ── Mobile: abilita scroll ── */
+    @media (max-width: 767px) {
+      html, body { height: auto; overflow: auto; }
+    }
+
     #scene {
       position: fixed; inset: 0;
       display: flex; flex-direction: column;
@@ -26,6 +31,15 @@
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
+    }
+
+    @media (max-width: 767px) {
+      #scene {
+        position: relative;
+        min-height: 100svh;
+        overflow-y: auto;
+        padding-bottom: 40px;
+      }
     }
 
     /* Dark overlay — sopprime le card nell'immagine, mantiene atmosfera bokeh */
@@ -67,6 +81,13 @@
       text-transform: uppercase;
     }
 
+    @media (max-width: 767px) {
+      .header-subtitle {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+      }
+    }
+
     /* ── 3-D Stage ── */
     #cards-stage {
       position: relative; z-index: 20;
@@ -76,6 +97,18 @@
       perspective: 1200px;
       perspective-origin: 50% 42%;
       flex-shrink: 0;
+    }
+
+    @media (max-width: 767px) {
+      #cards-stage {
+        width: 92%;
+        height: auto;
+        perspective: none;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        flex-shrink: unset;
+      }
     }
 
     /* ── Glass Card — NEON GLOW ── */
@@ -222,6 +255,33 @@
       flex-shrink: 0;
       margin-left: 6px; margin-top: -8px;
       opacity: 0.80;
+    }
+
+    /* ── MOBILE: card layout ── */
+    @media (max-width: 767px) {
+      .glass-card {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+        padding: 22px 18px !important;
+      }
+
+      /* Ordine visivo: Publishing in cima, poi Studio, CAP, Prompt */
+      #card-publishing { order: 1; }
+      #card-studio     { order: 2; }
+      #card-cap        { order: 3; }
+      #card-prompt     { order: 4; }
+
+      .c-desc { font-size: 14px; }
+
+      /* CAP card: globo più piccolo su mobile */
+      #globe-canvas {
+        width: 90px;
+        height: 90px;
+      }
     }
   </style>
 </head>
@@ -463,6 +523,8 @@ document.querySelectorAll('.glass-card').forEach(card => {
 (function () {
   if (typeof gsap === 'undefined' || window.__gsapFailed) return;
 
+  const isMobile = window.innerWidth < 768;
+
   const FINALS = {
     'card-studio':    { ry:  18, rx: -4, z: 30 },
     'card-publishing':{ ry:  -6, rx: 10, z:  8 },
@@ -475,7 +537,9 @@ document.querySelectorAll('.glass-card').forEach(card => {
   Object.entries(FINALS).forEach(([id, f]) => {
     gsap.set('#' + id, {
       opacity: 0, y: 80, scale: .90,
-      rotateY: f.ry, rotateX: f.rx, translateZ: f.z
+      rotateY: isMobile ? 0 : f.ry,
+      rotateX: isMobile ? 0 : f.rx,
+      translateZ: isMobile ? 0 : f.z
     });
   });
 
@@ -494,27 +558,30 @@ document.querySelectorAll('.glass-card').forEach(card => {
   // --- Idle float ---
   tl.call(() => {
     [
-      ['card-studio',     0,    -10, 3.4],
-      ['card-publishing', .55,  -7,  3.0],
-      ['card-cap',        1.0,  -5,  3.7],
-      ['card-prompt',     .25,  -8,  3.2],
+      ['card-studio',     0,    -6, 3.4],
+      ['card-publishing', .55,  -5, 3.0],
+      ['card-cap',        1.0,  -4, 3.7],
+      ['card-prompt',     .25,  -5, 3.2],
     ].forEach(([id, delay, amt, dur]) => {
       gsap.to('#' + id, {
-        y: amt, duration: dur, delay,
+        y: isMobile ? amt * 0.5 : amt,
+        duration: dur, delay,
         ease: 'sine.inOut', repeat: -1, yoyo: true
       });
     });
   });
 
-  // --- Cursor parallax ---
-  document.addEventListener('mousemove', e => {
-    const nx = (e.clientX / window.innerWidth  - .5) * 2;
-    const ny = (e.clientY / window.innerHeight - .5) * 2;
-    gsap.to('#card-studio',    { rotateY:  18 + nx*3.5, rotateX: -4 - ny*2.2, duration: 1.8, ease: 'power2.out' });
-    gsap.to('#card-publishing',{ rotateY:  -6 + nx*2.2, rotateX: 10 - ny*2.2, duration: 1.8, ease: 'power2.out' });
-    gsap.to('#card-cap',       { rotateY:  -3 + nx*2.0, rotateX:  4 - ny*2.0, duration: 1.8, ease: 'power2.out' });
-    gsap.to('#card-prompt',    { rotateY: -18 + nx*3.5, rotateX: -3 - ny*2.2, duration: 1.8, ease: 'power2.out' });
-  });
+  // --- Cursor parallax (solo desktop) ---
+  if (!isMobile) {
+    document.addEventListener('mousemove', e => {
+      const nx = (e.clientX / window.innerWidth  - .5) * 2;
+      const ny = (e.clientY / window.innerHeight - .5) * 2;
+      gsap.to('#card-studio',    { rotateY:  18 + nx*3.5, rotateX: -4 - ny*2.2, duration: 1.8, ease: 'power2.out' });
+      gsap.to('#card-publishing',{ rotateY:  -6 + nx*2.2, rotateX: 10 - ny*2.2, duration: 1.8, ease: 'power2.out' });
+      gsap.to('#card-cap',       { rotateY:  -3 + nx*2.0, rotateX:  4 - ny*2.0, duration: 1.8, ease: 'power2.out' });
+      gsap.to('#card-prompt',    { rotateY: -18 + nx*3.5, rotateX: -3 - ny*2.2, duration: 1.8, ease: 'power2.out' });
+    });
+  }
 })();
 </script>
 </body>
