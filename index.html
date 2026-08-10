@@ -22,18 +22,25 @@
       display: flex; flex-direction: column;
       align-items: center;
       overflow: hidden;
+      background-image: url('hero.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
     }
 
-    /* Background canvas fills entire viewport */
-    #bg-canvas {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      z-index: 0; pointer-events: none;
+    /* Dark overlay — sopprime le card nell'immagine, mantiene atmosfera bokeh */
+    #scene::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 7, 15, 0.72);
+      z-index: 1;
+      pointer-events: none;
     }
 
     /* ── Header ── */
     #header {
-      position: relative; z-index: 10;
+      position: relative; z-index: 20;
       text-align: center;
       padding-top: 24px;
       margin-bottom: 28px;
@@ -62,7 +69,7 @@
 
     /* ── 3-D Stage ── */
     #cards-stage {
-      position: relative; z-index: 5;
+      position: relative; z-index: 20;
       width: 1040px;
       max-width: 98vw;
       height: 520px;
@@ -220,8 +227,6 @@
 </head>
 <body>
 <div id="scene">
-  <canvas id="bg-canvas"></canvas>
-
   <!-- ── Header ── -->
   <div id="header">
     <div class="header-title">
@@ -383,115 +388,6 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"
         onerror="window.__gsapFailed=true"></script>
 <script>
-// ── BACKGROUND — dark navy + large bokeh + stage floor ───────────────────────
-(function () {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-
-  function draw() {
-    const W = canvas.width  = window.innerWidth;
-    const H = canvas.height = window.innerHeight;
-
-    // --- Base gradient: deep navy center → near-black edges ---
-    const bg = ctx.createRadialGradient(W*.5, H*.40, 0, W*.5, H*.48, W*.78);
-    bg.addColorStop(0,   '#0a1624');
-    bg.addColorStop(.30, '#070f1c');
-    bg.addColorStop(.65, '#040c16');
-    bg.addColorStop(1,   '#020608');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-
-    // --- Curved arch / ceiling structure at top ---
-    const arch = ctx.createRadialGradient(W*.5, H*.06, 0, W*.5, H*.06, W*.62);
-    arch.addColorStop(0,   'rgba(12,30,62,.34)');
-    arch.addColorStop(.5,  'rgba(8,22,50,.16)');
-    arch.addColorStop(1,   'transparent');
-    ctx.fillStyle = arch;
-    ctx.fillRect(0, 0, W, H*.58);
-
-    // --- Stage platform glow (circular, bottom center) ---
-    const stage = ctx.createRadialGradient(W*.5, H*.98, 0, W*.5, H*.92, W*.52);
-    stage.addColorStop(0,   'rgba(28,62,112,.38)');
-    stage.addColorStop(.35, 'rgba(18,48,90,.22)');
-    stage.addColorStop(.7,  'rgba(10,32,68,.10)');
-    stage.addColorStop(1,   'transparent');
-    ctx.fillStyle = stage;
-    ctx.fillRect(0, 0, W, H);
-
-    // --- Reflective floor ellipse ---
-    const floorGrad = ctx.createRadialGradient(W*.5, H*.96, 0, W*.5, H*.9, W*.48);
-    floorGrad.addColorStop(0,  'rgba(40,80,140,.22)');
-    floorGrad.addColorStop(.5, 'rgba(24,55,100,.12)');
-    floorGrad.addColorStop(1,  'transparent');
-    ctx.fillStyle = floorGrad;
-    ctx.fillRect(0, H*.65, W, H*.35);
-
-    // --- Floor reflection lines (horizontal, very subtle) ---
-    for (let i = 0; i < 18; i++) {
-      const yL = H * (.72 + i * .022);
-      if (yL > H) break;
-      ctx.strokeStyle = `rgba(98,175,255,${(i/18) * .055})`;
-      ctx.lineWidth = .5;
-      ctx.beginPath(); ctx.moveTo(W*.08, yL); ctx.lineTo(W*.92, yL); ctx.stroke();
-    }
-
-    // --- LARGE BOKEH ORBS — key visual element ---
-    // Sizes now 30-80px, visible as soft blurred light blobs
-    const bokeh = [
-      // left side
-      { x:.04, y:.12, r:62, a:.18, h:210 },
-      { x:.08, y:.38, r:44, a:.13, h:205 },
-      { x:.03, y:.60, r:50, a:.15, h:208 },
-      { x:.12, y:.80, r:38, a:.11, h:212 },
-      { x:.18, y:.20, r:34, a:.10, h:215 },
-      // right side
-      { x:.96, y:.15, r:58, a:.17, h:210 },
-      { x:.90, y:.42, r:48, a:.14, h:205 },
-      { x:.94, y:.68, r:52, a:.15, h:208 },
-      { x:.84, y:.84, r:36, a:.10, h:212 },
-      { x:.78, y:.22, r:40, a:.12, h:215 },
-      // top center
-      { x:.35, y:.06, r:30, a:.09, h:215 },
-      { x:.50, y:.04, r:36, a:.11, h:210 },
-      { x:.65, y:.07, r:32, a:.09, h:208 },
-      // scattered background
-      { x:.22, y:.50, r:28, a:.07, h:215 },
-      { x:.76, y:.52, r:30, a:.07, h:210 },
-      { x:.48, y:.88, r:40, a:.10, h:208 },
-      { x:.30, y:.78, r:26, a:.07, h:212 },
-      { x:.70, y:.80, r:28, a:.07, h:215 },
-    ];
-
-    bokeh.forEach(({ x, y, r, a, h }) => {
-      const bx = x * W, by = y * H;
-      const g = ctx.createRadialGradient(bx, by, 0, bx, by, r);
-      g.addColorStop(0,   `hsla(${h},62%,82%,${a})`);
-      g.addColorStop(.45, `hsla(${h},55%,78%,${a * .50})`);
-      g.addColorStop(.78, `hsla(${h},50%,72%,${a * .18})`);
-      g.addColorStop(1,   `hsla(${h},45%,65%,0)`);
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill();
-    });
-
-    // --- Star particles (very small, sparse) ---
-    // Use a seeded pattern for consistency
-    const seed = 42;
-    const starCount = Math.round(W * H / 14000);
-    for (let i = 0; i < starCount; i++) {
-      // LCG pseudo-random
-      const sx = ((seed * (i * 12345 + 1) + 67891) % W + W) % W;
-      const sy = ((seed * (i * 23456 + 2) + 12345) % (H * .82) + H * .82) % (H * .82);
-      const sa = .08 + (i % 7) * .04;
-      const sr = .5 + (i % 3) * .4;
-      ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200,224,242,${sa})`; ctx.fill();
-    }
-  }
-
-  window.addEventListener('resize', draw);
-  draw();
-})();
-
 // ── GLOBE (CAP card) — wireframe sphere ──────────────────────────────────────
 (function () {
   const canvas = document.getElementById('globe-canvas');
