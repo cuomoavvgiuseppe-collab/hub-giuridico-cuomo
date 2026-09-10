@@ -22,18 +22,29 @@
       z-index: 200; pointer-events: none; will-change: transform;
     }
 
-    /* Custom cursor — white square, mix-blend-mode difference (femmefatale exact) */
-    #cursor {
+    /* Custom cursor — dot + lagging ring */
+    #cursor-dot {
       position: fixed; top: 0; left: 0;
-      width: 40px; height: 40px; background: #fff;
-      mix-blend-mode: difference;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #fff;
       pointer-events: none; z-index: 9999; opacity: 0;
       will-change: transform;
-      transition: width  0.35s cubic-bezier(0.18,1.03,0.82,1.01),
-                  height 0.35s cubic-bezier(0.18,1.03,0.82,1.01);
     }
-    #cursor.enlarged { width: 100px; height: 100px; }
-    @media (pointer: coarse) { #cursor { display: none; } }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.55);
+      pointer-events: none; z-index: 9998; opacity: 0;
+      will-change: transform;
+      transition: width  0.32s cubic-bezier(0.18,1.03,0.82,1.01),
+                  height 0.32s cubic-bezier(0.18,1.03,0.82,1.01),
+                  border-color 0.28s ease;
+    }
+    #cursor-ring.on-light  { border-color: rgba(0,0,0,0.35); }
+    #cursor-dot.on-light   { background: #000; }
+    #cursor-ring.on-link   { width: 48px; height: 48px; border-color: rgba(255,255,255,0.18); }
+    #cursor-ring.on-link.on-light { border-color: rgba(0,0,0,0.18); }
+    @media (pointer: coarse) { #cursor-dot, #cursor-ring { display: none; } }
 
     /* Film grain */
     #grain {
@@ -231,7 +242,8 @@
 <body>
 
   <div id="intro-overlay"></div>
-  <div id="cursor"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
   <div id="grain" aria-hidden="true"></div>
 
   <nav id="main-nav">
@@ -250,7 +262,7 @@
     <div class="hero-bg" id="hero-bg"></div>
     <div class="hero-content">
       <p class="hero-eyebrow lm">
-        <span class="lmi">Studio Legale &mdash; Avv. Giuseppe Cuomo &mdash; Napoli</span>
+        <span class="lmi">Studio Legale &mdash; Avv. Giuseppe Cuomo &mdash; Nocera Inferiore (Sa)</span>
       </p>
       <h1 class="hero-heading">
         <div class="lm"><span class="lmi">Hub Giuridico Cuomo</span></div>
@@ -350,25 +362,30 @@
   <footer>
     <span class="footer-brand">Hub Giuridico Cuomo</span>
     <div class="footer-right">
-      <span class="footer-copy">Avv. Giuseppe Cuomo &mdash; Napoli</span>
+      <span class="footer-copy">Avv. Giuseppe Cuomo &mdash; Nocera Inferiore (Sa)</span>
       <span class="footer-copy">&copy; 2026</span>
     </div>
   </footer>
 
   <script>
   (function () {
-    var cur = document.getElementById('cursor');
+    var dot  = document.getElementById('cursor-dot');
+    var ring = document.getElementById('cursor-ring');
     var isFine = window.matchMedia('(pointer: fine)').matches;
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    /* Cursor — plain JS for max perf */
-    if (isFine) {
+    /* Cursor — dot exact, ring lagging via GSAP */
+    if (isFine && dot && ring) {
+      var setDotX = gsap.quickSetter(dot, 'x', 'px');
+      var setDotY = gsap.quickSetter(dot, 'y', 'px');
       document.addEventListener('mousemove', function (e) {
-        cur.style.transform = 'translate(' + (e.clientX - 20) + 'px,' + (e.clientY - 20) + 'px)';
+        setDotX(e.clientX - 2.5);
+        setDotY(e.clientY - 2.5);
+        gsap.to(ring, { x: e.clientX - 16, y: e.clientY - 16, duration: 0.55, ease: 'power2.out', overwrite: true });
       }, { passive: true });
       document.querySelectorAll('a,button').forEach(function (el) {
-        el.addEventListener('mouseenter', function () { cur.classList.add('enlarged'); });
-        el.addEventListener('mouseleave', function () { cur.classList.remove('enlarged'); });
+        el.addEventListener('mouseenter', function () { ring.classList.add('on-link'); });
+        el.addEventListener('mouseleave', function () { ring.classList.remove('on-link'); });
       });
     }
 
@@ -385,7 +402,7 @@
     gsap.registerPlugin(ScrollTrigger);
     if (prefersReduced) gsap.globalTimeline.timeScale(20);
 
-    gsap.set('#cursor',    { opacity: 0 });
+    gsap.set(['#cursor-dot', '#cursor-ring'], { opacity: 0 });
     gsap.set('#hero-meta', { opacity: 0 });
 
     /* ── Master intro timeline ── */
@@ -401,7 +418,7 @@
     });
 
     /* 2. Cursor appears */
-    tl.to('#cursor', { opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.45');
+    tl.to(['#cursor-dot', '#cursor-ring'], { opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.45');
 
     /* 3. Nav logo slides up from mask */
     tl.to('#nav-logo', { y: '0%', opacity: 1, duration: 0.78, ease: 'power4.out' }, '-=0.30');
@@ -424,10 +441,14 @@
       onEnter: function () {
         document.getElementById('nav-logo').classList.add('dark');
         document.querySelectorAll('.nav-link-item').forEach(function (li) { li.classList.add('dark'); });
+        if (dot) dot.classList.add('on-light');
+        if (ring) ring.classList.add('on-light');
       },
       onLeaveBack: function () {
         document.getElementById('nav-logo').classList.remove('dark');
         document.querySelectorAll('.nav-link-item').forEach(function (li) { li.classList.remove('dark'); });
+        if (dot) dot.classList.remove('on-light');
+        if (ring) ring.classList.remove('on-light');
       }
     });
 
